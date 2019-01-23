@@ -17,6 +17,7 @@
                 <HBox alignment="CENTER" prefHeight="30.0" prefWidth="200.0" spacing="5.0">
                     <children>
                         <Button mnemonicParsing="false" onAction="#createRoomAction" text="%create_room"/>
+                        <Button mnemonicParsing="false" onAction="#getLocalHostAction" text="%get_host"/>
                         <Button mnemonicParsing="false" onAction="#joinRoomAction" text="%join_room"/>
                     </children>
                 </HBox>

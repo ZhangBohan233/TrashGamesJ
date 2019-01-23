@@ -17,18 +17,21 @@ public class GameConnection {
 
     public static final byte CONFIRM = 1;
 
+    private String serverAddress;
+
     private ServerSocket serverSocket;
 
     private Socket[] clientSockets;
 
     private int currentNum;
 
-    public GameConnection(int clientNum) {
+    public GameConnection(String serverAddress, int clientNum) {
         clientSockets = new Socket[clientNum];
+        this.serverAddress = serverAddress;
     }
 
     public void createServer() throws IOException {
-        serverSocket = new ServerSocket(PORT, 50, InetAddress.getLocalHost());
+        serverSocket = new ServerSocket(PORT, 50, InetAddress.getByName(serverAddress));
     }
 
     public int acceptOne() throws IOException {

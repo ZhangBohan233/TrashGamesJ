@@ -35,7 +35,7 @@ import java.util.ResourceBundle;
  * utilities like native2ascii to convert files.
  * <p/>
  * <br>
- *
+ * <p>
  * Usage: For instance we want to load resource bundle "test" from current deirectory and use english locale. If locale
  * not found, we will use default file (and ignore default locale).
  *
@@ -55,28 +55,24 @@ import java.util.ResourceBundle;
  *
  * @author SoulKeeper
  */
-public class ResourceBundleControl extends ResourceBundle.Control
-{
+public class ResourceBundleControl extends ResourceBundle.Control {
     /**
      * Encoding which will be used to read resource bundle, by defaults it's 8859_1
      */
-    private String  encoding  = "GBK";
+    private String encoding = "GBK";
 
     /**
      * Just empty default constructor
      */
-    public ResourceBundleControl()
-    {
+    public ResourceBundleControl() {
     }
 
     /**
      * This constructor allows to set encoding that will be used while reading resource bundle
      *
-     * @param encoding
-     *            encoding to use
+     * @param encoding encoding to use
      */
-    public ResourceBundleControl(String encoding)
-    {
+    public ResourceBundleControl(String encoding) {
         this.encoding = encoding;
     }
 
@@ -84,98 +80,71 @@ public class ResourceBundleControl extends ResourceBundle.Control
      * This code is just copy-paste with usage {@link java.io.Reader} instead of {@link java.io.InputStream} to read
      * properties.<br>
      * <br>
-     *
+     * <p>
      * {@inheritDoc}
      */
     @Override
     public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload) throws IllegalAccessException,
-            InstantiationException, IOException
-    {
+            InstantiationException, IOException {
         String bundleName = toBundleName(baseName, locale);
         ResourceBundle bundle = null;
-        if (format.equals("java.class"))
-        {
-            try
-            {
+        if (format.equals("java.class")) {
+            try {
                 @SuppressWarnings(
-                        { "unchecked" })
+                        {"unchecked"})
                 Class<? extends ResourceBundle> bundleClass = (Class<? extends ResourceBundle>) loader.loadClass(bundleName);
 
                 // If the class isn't a ResourceBundle subclass, throw a
                 // ClassCastException.
-                if (ResourceBundle.class.isAssignableFrom(bundleClass))
-                {
+                if (ResourceBundle.class.isAssignableFrom(bundleClass)) {
                     bundle = bundleClass.newInstance();
-                }
-                else
-                {
+                } else {
                     throw new ClassCastException(bundleClass.getName() + " cannot be cast to ResourceBundle");
                 }
+            } catch (ClassNotFoundException ignored) {
             }
-            catch (ClassNotFoundException ignored)
-            {
-            }
-        }
-        else if (format.equals("java.properties"))
-        {
+        } else if (format.equals("java.properties")) {
             final String resourceName = toResourceName(bundleName, "properties");
             final ClassLoader classLoader = loader;
             final boolean reloadFlag = reload;
             InputStreamReader isr = null;
             InputStream stream;
-            try
-            {
-                stream = AccessController.doPrivileged(new PrivilegedExceptionAction<InputStream>()
-                {
+            try {
+                stream = AccessController.doPrivileged(new PrivilegedExceptionAction<InputStream>() {
                     @Override
-                    public InputStream run() throws IOException
-                    {
+                    public InputStream run() throws IOException {
                         InputStream is = null;
-                        if (reloadFlag)
-                        {
+                        if (reloadFlag) {
                             URL url = classLoader.getResource(resourceName);
-                            if (url != null)
-                            {
+                            if (url != null) {
                                 URLConnection connection = url.openConnection();
-                                if (connection != null)
-                                {
+                                if (connection != null) {
                                     // Disable caches to get fresh data for
                                     // reloading.
                                     connection.setUseCaches(false);
                                     is = connection.getInputStream();
                                 }
                             }
-                        }
-                        else
-                        {
+                        } else {
                             is = classLoader.getResourceAsStream(resourceName);
                         }
                         return is;
                     }
                 });
-                if (stream != null)
-                {
+                if (stream != null) {
                     isr = new InputStreamReader(stream, encoding);
                 }
-            }
-            catch (PrivilegedActionException e)
-            {
+            } catch (PrivilegedActionException e) {
                 throw (IOException) e.getException();
             }
-            if (isr != null)
-            {
-                try
-                {
+            if (isr != null) {
+                try {
                     bundle = new PropertyResourceBundle(isr);
-                }
-                finally
-                {
+                } finally {
                     isr.close();
                 }
             }
-        }
-        else
-        {
+        } else {
             throw new IllegalArgumentException("unknown format: " + format);
         }
         return bundle;
@@ -186,19 +155,16 @@ public class ResourceBundleControl extends ResourceBundle.Control
      *
      * @return encoding
      */
-    public String getEncoding()
-    {
+    public String getEncoding() {
         return encoding;
     }
 
     /**
      * Sets the encoding that will be used to read properties resource bundles
      *
-     * @param encoding
-     *            encoding that will be used for properties
+     * @param encoding encoding that will be used for properties
      */
-    public void setEncoding(String encoding)
-    {
+    public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 }

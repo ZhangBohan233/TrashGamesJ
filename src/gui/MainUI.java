@@ -8,12 +8,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -36,9 +30,9 @@ public class MainUI extends Application {
     void doubleGame() throws IOException {
         Stage stage = new Stage();
 
-        FXMLLoader loader = makeView(stage, "gameUI.fxml");
+        FXMLLoader loader = makeView(stage, "xiangQiUI.fxml");
 
-        GameUI gameUI = loader.getController();
+        XiangQiUI gameUI = loader.getController();
 
         stage.show();
     }

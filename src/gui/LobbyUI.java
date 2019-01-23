@@ -6,13 +6,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.*;
 import java.util.ResourceBundle;
 
@@ -29,6 +28,9 @@ public class LobbyUI implements Initializable {
     @FXML
     Button startGameButton;
 
+    @FXML
+    Label messageLabel;
+
     MainUI parent;
 
     private GameConnection gameConnection;
@@ -42,11 +44,11 @@ public class LobbyUI implements Initializable {
     void createRoomAction() {
         try {
 //            ServerSocket serverSocket = new ServerSocket(PORT, 50, InetAddress.getLocalHost());
-            gameConnection = new GameConnection(1);
+            String localHostAddress = textField.getText();
+            gameConnection = new GameConnection(localHostAddress, 1);
             gameConnection.createServer();
-            System.out.println("Listening on ip " + gameConnection.getServerSocket().getInetAddress().getHostAddress());
 
-            textField.setText(String.format("Your IP: %s", gameConnection.getServerSocket().getInetAddress().getHostAddress()));
+            System.out.println("Listening on ip " + localHostAddress);
 
             refreshList();
 
@@ -87,6 +89,12 @@ public class LobbyUI implements Initializable {
     }
 
     @FXML
+    void getLocalHostAction() throws IOException {
+        String localHost = InetAddress.getLocalHost().getHostAddress();
+        textField.setText(localHost);
+    }
+
+    @FXML
     void startGameAction() throws IOException {
         gameConnection.broadcastStart();
 
@@ -107,7 +115,7 @@ public class LobbyUI implements Initializable {
     private void startGame(Socket client, boolean isServer) {
         try {
             Stage stage = new Stage();
-            FXMLLoader loader = parent.makeView(stage, "gameUI.fxml");
+            FXMLLoader loader = parent.makeView(stage, "xiangQiUI.fxml");
 
             String title;
             if (isServer) {
@@ -117,7 +125,7 @@ public class LobbyUI implements Initializable {
             }
             stage.setTitle(title);
 
-            GameUI gameUI = loader.getController();
+            XiangQiUI gameUI = loader.getController();
 
             gameUI.setResources(loader.getResources());
 

@@ -22,18 +22,21 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-public class GameUI implements Initializable {
+public class XiangQiUI implements Initializable {
 
     private final static int BLOCK_SIZE = 64;
 
-    private final static int SELECT = 0;
+    private final static int SELECT = 4;
 
-    private final static int DESELECT = 1;
+    private final static int DESELECT = 5;
 
-    private final static int MOVE = 2;
+    private final static int MOVE = 6;
 
     @FXML
     private Canvas canvas;
+
+    @FXML
+    private Canvas redDeadCanvas, blackDeadCanvas;
 
     private ChessGame chessGame;
 
@@ -42,10 +45,6 @@ public class GameUI implements Initializable {
             hintPaint;
 
     private Chess selection;
-
-//    Socket clientSocket;
-//
-//    ServerSocket serverSocket;
 
     InputStream inputStream;
 
@@ -72,8 +71,6 @@ public class GameUI implements Initializable {
         draw();
 
         setOnClickHandler();
-
-//        listen();
     }
 
     public void setResources(ResourceBundle resources) {
@@ -107,6 +104,7 @@ public class GameUI implements Initializable {
                             chessGame.move(r, c);
                             selection = null;
                             draw();
+                            drawDead();
                         });
                     }
                 }
@@ -168,31 +166,9 @@ public class GameUI implements Initializable {
             for (int col = 0; col < 9; col++) {
                 Chess chess = chessGame.getChessAt(row, col);
                 if (chess != null) {
-                    Paint paint, textPaint, surfacePaint;
-                    if (chess.isRed()) {
-                        paint = redChessPaint;
-                        textPaint = redTextPaint;
-                    } else {
-                        paint = blackChessPaint;
-                        textPaint = blackTextPaint;
-                    }
-                    if (chess.isSelected()) {
-                        surfacePaint = selectionSurfacePaint;
-                    } else {
-                        surfacePaint = chessSurfacePaint;
-                    }
                     double x = getScreenX(col);
                     double y = getScreenY(row);
-                    gc.setStroke(paint);
-                    gc.strokeOval(x - 24, y - 24, 48, 48);
-
-                    gc.setFill(surfacePaint);
-                    gc.fillOval(x - 22, y - 22, 44, 44);
-
-                    gc.setFill(textPaint);
-                    gc.setTextAlign(TextAlignment.CENTER);
-                    gc.setFont(new Font(24));
-                    gc.fillText(chess.toString(), x, y + 6);
+                    drawOneChess(gc, chess, x, y);
                 }
                 if (chessGame.getHintAt(row, col)) {
                     gc.setFill(hintPaint);
@@ -202,6 +178,64 @@ public class GameUI implements Initializable {
                 }
             }
         }
+    }
+
+    private void drawOneChess(GraphicsContext gc, Chess chess, double x, double y) {
+        Paint paint, textPaint, surfacePaint;
+        if (chess.isRed()) {
+            paint = redChessPaint;
+            textPaint = redTextPaint;
+        } else {
+            paint = blackChessPaint;
+            textPaint = blackTextPaint;
+        }
+        if (chess.isSelected()) {
+            surfacePaint = selectionSurfacePaint;
+        } else {
+            surfacePaint = chessSurfacePaint;
+        }
+
+        gc.setStroke(paint);
+        gc.strokeOval(x - 24, y - 24, 48, 48);
+
+        gc.setFill(surfacePaint);
+        gc.fillOval(x - 22, y - 22, 44, 44);
+
+        gc.setFill(textPaint);
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setFont(new Font(24));
+        gc.fillText(chess.toString(), x, y + 6);
+    }
+
+    private void drawDead() {
+        GraphicsContext rgc = redDeadCanvas.getGraphicsContext2D();
+        GraphicsContext bgc = blackDeadCanvas.getGraphicsContext2D();
+
+        rgc.clearRect(0, 0, redDeadCanvas.getWidth(), redDeadCanvas.getHeight());
+        bgc.clearRect(0, 0, blackDeadCanvas.getWidth(), blackDeadCanvas.getHeight());
+
+        for (int i = 0; i < chessGame.getBlackDeaths().size(); i++) {
+            Chess dead = chessGame.getBlackDeaths().get(i);
+            drawDeadChess(bgc, i, dead);
+        }
+        for (int i = 0; i < chessGame.getRedDeaths().size(); i++) {
+            Chess dead = chessGame.getRedDeaths().get(i);
+            drawDeadChess(rgc, i, dead);
+        }
+    }
+
+    private void drawDeadChess(GraphicsContext gc, int count, Chess chess) {
+        double x;
+        double y;
+        int minus = BLOCK_SIZE / 2;
+        if (count < 9) {
+            x = getScreenX(count);
+            y = getScreenY(0) - minus;
+        } else {
+            x = getScreenX(count - 9);
+            y = getScreenY(1) - minus;
+        }
+        drawOneChess(gc, chess, x, y);
     }
 
     private double getScreenX(int col) {
@@ -219,15 +253,12 @@ public class GameUI implements Initializable {
         return new int[]{row, col};
     }
 
-
     private void setOnClickHandler() {
         canvas.setOnMouseClicked(e -> {
             double x = e.getX();
             double y = e.getY();
 
             int[] pos = getClicked(x, y);
-            System.out.println(isServer + " " + chessGame.isRedTurn());
-            System.out.println(Arrays.toString(pos));
             if (isServer == chessGame.isRedTurn()) {
                 if (checkPos(pos)) {
                     if (selection == null) {
@@ -239,7 +270,6 @@ public class GameUI implements Initializable {
                         }
                     } else {
                         // move
-
                         Chess clicked = chessGame.getChessAt(pos[0], pos[1]);
                         if (clicked == selection) {
                             selection = null;
@@ -261,8 +291,9 @@ public class GameUI implements Initializable {
                                     }
                                     showAlert(resources.getString("game_over"), p, "");
                                 }
-//                            redDeaths.invalidate();
-//                            blackDeaths.invalidate();
+                                drawDead();
+//                            redDead.invalidate();
+//                            blackDead.invalidate();
                             }
                         }
                     }
