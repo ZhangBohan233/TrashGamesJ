@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.*;
 import java.util.ResourceBundle;
 
@@ -30,6 +31,9 @@ public class LobbyUI implements Initializable {
 
     @FXML
     Label messageLabel;
+
+    @FXML
+    Button closeRoomButton;
 
     MainUI parent;
 
@@ -51,16 +55,17 @@ public class LobbyUI implements Initializable {
             gameConnection.createServer();
 
             messageLabel.setText(resources.getString("create_success"));
+            closeRoomButton.setDisable(false);
 
             System.out.println("Listening on ip " + localHostAddress);
 
-            refreshList();
+            refreshListOwner();
 
-            Thread thread = new Thread(() -> {
+            Thread listen = new Thread(() -> {
                 try {
                     while (!gameConnection.isFull()) {
                         gameConnection.acceptOne();
-                        Platform.runLater(this::refreshList);
+                        Platform.runLater(this::refreshListOwner);
                     }
                     Platform.runLater(() -> {
                         startGameButton.setDisable(false);
@@ -70,7 +75,8 @@ public class LobbyUI implements Initializable {
                     e.printStackTrace();
                 }
             });
-            thread.start();
+
+            listen.start();
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -87,14 +93,21 @@ public class LobbyUI implements Initializable {
             messageLabel.setText(resources.getString("connect_success"));
             System.out.println("Connected to " + ip);
 
+
             Thread listening = new Thread(
-                    () -> GameConnection.clientListenToStart(client, () -> startGame(client, false)));
+                    () -> GameConnection.clientListenToStart(client, () -> startGame(client, false), playerList));
             listening.start();
 
         } catch (IOException e) {
             messageLabel.setText(resources.getString("connect_failed"));
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    void closeRoomAction() {
+        gameConnection.close();
+        closeRoomButton.setDisable(true);
     }
 
     @FXML
@@ -110,7 +123,11 @@ public class LobbyUI implements Initializable {
         startGame(gameConnection.getClientSockets()[0], true);
     }
 
-    private void refreshList() {
+    private void refreshListGuest() {
+
+    }
+
+    private void refreshListOwner() {
         playerList.getItems().clear();
         if (gameConnection != null) {
             playerList.getItems().add(gameConnection.getServerSocket().getInetAddress().toString());
@@ -129,8 +146,23 @@ public class LobbyUI implements Initializable {
             String title;
             if (isServer) {
                 title = loader.getResources().getString("red_side");
+                stage.setOnCloseRequest(e -> {
+                    gameConnection.broadcastClose();
+//                    gameConnection.close();
+                });
             } else {
                 title = loader.getResources().getString("black_side");
+                stage.setOnCloseRequest(e -> {
+                    try {
+                        OutputStream os = client.getOutputStream();
+                        os.write(new byte[]{GameConnection.CLOSE});
+                        os.flush();
+//                        os.close();
+//                        client.close();
+                    } catch (IOException e2) {
+                        e2.printStackTrace();
+                    }
+                });
             }
             stage.setTitle(title);
 

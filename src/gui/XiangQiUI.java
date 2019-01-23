@@ -1,5 +1,6 @@
 package gui;
 
+import connection.GameConnection;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -91,10 +92,10 @@ public class XiangQiUI implements Initializable {
         Thread thread = new Thread(() -> {
             try {
                 byte[] buffer = new byte[3];
-                int action;
+                byte action;
                 int read;
                 while ((read = inputStream.read(buffer)) != -1) {
-                    action = buffer[0] & 0xff;
+                    action = buffer[0];
                     if (read == 3) {
                         final int r = buffer[1] & 0xff;
                         final int c = buffer[2] & 0xff;
@@ -122,8 +123,16 @@ public class XiangQiUI implements Initializable {
                             replyConfirm();
                         }
                     } else if (read == 1) {
-                        System.out.println("Confirmed!");
-                        stopTimer();
+                        if (buffer[0] == GameConnection.CONFIRM) {
+                            System.out.println("Confirmed!");
+                            stopTimer();
+                        } else if (action == GameConnection.CLOSE) {
+                            chessGame.terminate();
+                            Platform.runLater(() -> {
+                                showAlert(resources.getString("error"), resources.getString("user_exit"), "");
+                            });
+
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -308,7 +317,10 @@ public class XiangQiUI implements Initializable {
                                     } else {
                                         p = resources.getString("black_win");
                                     }
-                                    showAlert(resources.getString("game_over"), p, "");
+                                    Platform.runLater(() -> {
+                                        showAlert(resources.getString("game_over"), p, "");
+                                    });
+
                                 }
                                 drawDead();
                             }
@@ -364,7 +376,9 @@ public class XiangQiUI implements Initializable {
                         return;
                     }
                 }
-                showAlert(resources.getString("error"), resources.getString("expire"), " ");
+                Platform.runLater(() -> {
+                    showAlert(resources.getString("error"), resources.getString("expire"), " ");
+                });
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
             }

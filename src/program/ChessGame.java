@@ -491,4 +491,8 @@ public class ChessGame {
     public boolean isRedTurn() {
         return redTurn;
     }
+
+    public void terminate() {
+        terminated = true;
+    }
 }
