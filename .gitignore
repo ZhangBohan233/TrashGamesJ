@@ -1,3 +1,10 @@
+# Ide file
+
+*.iml
+*.xml
+.idea/
+.idea/*
+
 # Compiled class file
 *.class
 
