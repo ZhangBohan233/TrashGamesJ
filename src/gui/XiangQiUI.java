@@ -8,7 +8,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import program.Chess;
@@ -17,10 +16,7 @@ import program.ChessGame;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class XiangQiUI implements Initializable {
@@ -36,6 +32,8 @@ public class XiangQiUI implements Initializable {
     private final static byte MOVE = 6;
 
     private final static byte RECEIVED = 7;
+
+    private final static byte TERMINATED = 8;
 
     @FXML
     private Canvas canvas;
@@ -119,6 +117,7 @@ public class XiangQiUI implements Initializable {
                                 selection = null;
                                 draw();
                                 drawDead();
+                                checkTerminateAndShow();
                             });
                             replyConfirm();
                         }
@@ -128,15 +127,13 @@ public class XiangQiUI implements Initializable {
 //                            stopTimer();
                         } else if (action == GameConnection.CLOSE) {
                             chessGame.terminate();
-                            Platform.runLater(() -> {
-                                showAlert(resources.getString("error"), resources.getString("user_exit"), "");
-                            });
+                            Platform.runLater(() -> showAlert(resources.getString("error"), resources.getString("user_exit"), ""));
                         }
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                showAlert(resources.getString("error"), resources.getString("expire"), "");
+                Platform.runLater(() -> showAlert(resources.getString("error"), resources.getString("user_exit"), ""));
             }
         });
         thread.start();
@@ -309,19 +306,8 @@ public class XiangQiUI implements Initializable {
                                 selection = null;
                                 send(MOVE, pos[0], pos[1]);
                                 draw();
-                                if (chessGame.isTerminated()) {
-                                    String p;
-                                    if (chessGame.isRedWin()) {
-                                        p = resources.getString("red_win");
-                                    } else {
-                                        p = resources.getString("black_win");
-                                    }
-                                    Platform.runLater(() -> {
-                                        showAlert(resources.getString("game_over"), p, "");
-                                    });
-
-                                }
                                 drawDead();
+                                checkTerminateAndShow();
                             }
                         }
                     }
@@ -360,6 +346,18 @@ public class XiangQiUI implements Initializable {
         alert.setContentText(content);
 
         alert.show();
+    }
+
+    private void checkTerminateAndShow() {
+        if (chessGame.isTerminated()) {
+            String p;
+            if (chessGame.isRedWin()) {
+                p = resources.getString("red_win");
+            } else {
+                p = resources.getString("black_win");
+            }
+            Platform.runLater(() -> showAlert(resources.getString("game_over"), p, ""));
+        }
     }
 
 //    private void startTimer() {
