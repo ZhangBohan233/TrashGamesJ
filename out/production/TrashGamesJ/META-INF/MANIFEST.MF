@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: C:\Program Files\Java\jdk1.8.0_191\bin
+Main-Class: main.Main
+
