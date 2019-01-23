@@ -21,7 +21,7 @@
                         <Button mnemonicParsing="false" onAction="#joinRoomAction" text="%join_room"/>
                     </children>
                 </HBox>
-                <TextField fx:id="textField"/>
+                <TextField fx:id="textField" promptText="%input_ip"/>
                 <Label text="%players"/>
                 <ListView fx:id="playerList" prefHeight="305.0" prefWidth="280.0"/>
                 <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">

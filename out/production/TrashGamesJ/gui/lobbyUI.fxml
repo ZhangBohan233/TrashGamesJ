@@ -24,8 +24,9 @@
                 <TextField fx:id="textField"/>
                 <Label text="%players"/>
                 <ListView fx:id="playerList" prefHeight="305.0" prefWidth="280.0"/>
-                <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
-                    <Button disable="true" fx:id="startGameButton" onAction="#startGameAction" mnemonicParsing="false"
+                <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                    <Label fx:id="messageLabel"/>
+                    <Button fx:id="startGameButton" disable="true" mnemonicParsing="false" onAction="#startGameAction"
                             text="%start"/>
                 </HBox>
             </children>

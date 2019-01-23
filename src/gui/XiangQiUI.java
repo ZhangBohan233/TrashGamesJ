@@ -26,11 +26,15 @@ public class XiangQiUI implements Initializable {
 
     private final static int BLOCK_SIZE = 64;
 
-    private final static int SELECT = 4;
+    private final static long EXPIRE = 5000;
 
-    private final static int DESELECT = 5;
+    private final static byte SELECT = 4;
 
-    private final static int MOVE = 6;
+    private final static byte DESELECT = 5;
+
+    private final static byte MOVE = 6;
+
+    private final static byte RECEIVED = 7;
 
     @FXML
     private Canvas canvas;
@@ -46,16 +50,20 @@ public class XiangQiUI implements Initializable {
 
     private Chess selection;
 
-    InputStream inputStream;
+    private InputStream inputStream;
 
-    OutputStream outputStream;
+    private OutputStream outputStream;
 
     private ResourceBundle resources;
 
-    boolean isServer;
+    private boolean isServer;
+
+    private boolean inTimer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
+
         boardPaint = Paint.valueOf("black");
         redChessPaint = Paint.valueOf("red");
         blackChessPaint = Paint.valueOf("black");
@@ -73,8 +81,10 @@ public class XiangQiUI implements Initializable {
         setOnClickHandler();
     }
 
-    public void setResources(ResourceBundle resources) {
-        this.resources = resources;
+    public void setConnection(InputStream is, OutputStream os, boolean server) {
+        inputStream = is;
+        outputStream = os;
+        isServer = server;
     }
 
     public void listen() {
@@ -85,31 +95,40 @@ public class XiangQiUI implements Initializable {
                 int read;
                 while ((read = inputStream.read(buffer)) != -1) {
                     action = buffer[0] & 0xff;
-                    final int r = buffer[1] & 0xff;
-                    final int c = buffer[2] & 0xff;
-                    if (action == SELECT) {
-                        Platform.runLater(() -> {
-                            chessGame.selectPosition(r, c);
-                            selection = chessGame.getChessAt(r, c);
-                            draw();
-                        });
-                    } else if (action == DESELECT) {
-                        Platform.runLater(() -> {
-                            chessGame.deSelectPosition(r, c);
-                            selection = null;
-                            draw();
-                        });
-                    } else if (action == MOVE) {
-                        Platform.runLater(() -> {
-                            chessGame.move(r, c);
-                            selection = null;
-                            draw();
-                            drawDead();
-                        });
+                    if (read == 3) {
+                        final int r = buffer[1] & 0xff;
+                        final int c = buffer[2] & 0xff;
+                        if (action == SELECT) {
+                            Platform.runLater(() -> {
+                                chessGame.selectPosition(r, c);
+                                selection = chessGame.getChessAt(r, c);
+                                draw();
+                            });
+                            replyConfirm();
+                        } else if (action == DESELECT) {
+                            Platform.runLater(() -> {
+                                chessGame.deSelectPosition(r, c);
+                                selection = null;
+                                draw();
+                            });
+                            replyConfirm();
+                        } else if (action == MOVE) {
+                            Platform.runLater(() -> {
+                                chessGame.move(r, c);
+                                selection = null;
+                                draw();
+                                drawDead();
+                            });
+                            replyConfirm();
+                        }
+                    } else if (read == 1) {
+                        System.out.println("Confirmed!");
+                        stopTimer();
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                showAlert(resources.getString("error"), resources.getString("expire"), "");
             }
         });
         thread.start();
@@ -259,7 +278,7 @@ public class XiangQiUI implements Initializable {
             double y = e.getY();
 
             int[] pos = getClicked(x, y);
-            if (isServer == chessGame.isRedTurn()) {
+            if (isServer == chessGame.isRedTurn() && !chessGame.isTerminated()) {
                 if (checkPos(pos)) {
                     if (selection == null) {
                         boolean click = chessGame.selectPosition(pos[0], pos[1]);
@@ -292,8 +311,6 @@ public class XiangQiUI implements Initializable {
                                     showAlert(resources.getString("game_over"), p, "");
                                 }
                                 drawDead();
-//                            redDead.invalidate();
-//                            blackDead.invalidate();
                             }
                         }
                     }
@@ -303,11 +320,19 @@ public class XiangQiUI implements Initializable {
 
     }
 
-    private void send(int action, int r, int c) {
-        byte[] array = new byte[]{(byte) action, (byte) r, (byte) c};
-
+    private void send(byte action, int r, int c) {
+        byte[] array = new byte[]{action, (byte) r, (byte) c};
         try {
             outputStream.write(array);
+            startTimer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void replyConfirm() {
+        try {
+            outputStream.write(new byte[]{RECEIVED});
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -323,6 +348,31 @@ public class XiangQiUI implements Initializable {
         alert.setHeaderText(header);
         alert.setContentText(content);
 
-        alert.showAndWait();
+        alert.show();
+    }
+
+    private void startTimer() {
+        inTimer = true;
+        Thread timer = new Thread(() -> {
+            try {
+                int i = 0;
+                while (i < EXPIRE) {
+                    if (inTimer) {
+                        Thread.sleep(100);
+                        i += 100;
+                    } else {
+                        return;
+                    }
+                }
+                showAlert(resources.getString("error"), resources.getString("expire"), " ");
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+        });
+        timer.start();
+    }
+
+    private void stopTimer() {
+        inTimer = false;
     }
 }

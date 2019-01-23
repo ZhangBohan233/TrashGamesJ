@@ -35,9 +35,11 @@ public class LobbyUI implements Initializable {
 
     private GameConnection gameConnection;
 
+    private ResourceBundle resources;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        this.resources = resources;
     }
 
     @FXML
@@ -47,6 +49,8 @@ public class LobbyUI implements Initializable {
             String localHostAddress = textField.getText();
             gameConnection = new GameConnection(localHostAddress, 1);
             gameConnection.createServer();
+
+            messageLabel.setText(resources.getString("create_success"));
 
             System.out.println("Listening on ip " + localHostAddress);
 
@@ -58,7 +62,10 @@ public class LobbyUI implements Initializable {
                         gameConnection.acceptOne();
                         Platform.runLater(this::refreshList);
                     }
-                    Platform.runLater(() -> startGameButton.setDisable(false));
+                    Platform.runLater(() -> {
+                        startGameButton.setDisable(false);
+                        messageLabel.setText(resources.getString("ready"));
+                    });
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -71,12 +78,13 @@ public class LobbyUI implements Initializable {
     }
 
     @FXML
-    void joinRoomAction() {
+    private void joinRoomAction() {
         try {
             String ip = textField.getText();
             Socket client = new Socket();
             client.connect(new InetSocketAddress(ip, PORT));
 
+            messageLabel.setText(resources.getString("connect_success"));
             System.out.println("Connected to " + ip);
 
             Thread listening = new Thread(
@@ -84,6 +92,7 @@ public class LobbyUI implements Initializable {
             listening.start();
 
         } catch (IOException e) {
+            messageLabel.setText(resources.getString("connect_failed"));
             e.printStackTrace();
         }
     }
@@ -127,12 +136,7 @@ public class LobbyUI implements Initializable {
 
             XiangQiUI gameUI = loader.getController();
 
-            gameUI.setResources(loader.getResources());
-
-            gameUI.inputStream = client.getInputStream();
-            gameUI.outputStream = client.getOutputStream();
-
-            gameUI.isServer = isServer;
+            gameUI.setConnection(client.getInputStream(), client.getOutputStream(), isServer);
             gameUI.listen();
 
             stage.show();
