@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 
 public class XiangQiUI implements Initializable {
 
-    private final static int BLOCK_SIZE = 64;
+    private final static int BLOCK_SIZE = 48;
 
     private final static long EXPIRE = 5000;
 
@@ -124,14 +124,13 @@ public class XiangQiUI implements Initializable {
                         }
                     } else if (read == 1) {
                         if (buffer[0] == GameConnection.CONFIRM) {
-                            System.out.println("Confirmed!");
-                            stopTimer();
+//                            System.out.println("Confirmed!");
+//                            stopTimer();
                         } else if (action == GameConnection.CLOSE) {
                             chessGame.terminate();
                             Platform.runLater(() -> {
                                 showAlert(resources.getString("error"), resources.getString("user_exit"), "");
                             });
-
                         }
                     }
                 }
@@ -224,14 +223,14 @@ public class XiangQiUI implements Initializable {
         }
 
         gc.setStroke(paint);
-        gc.strokeOval(x - 24, y - 24, 48, 48);
+        gc.strokeOval(x - 18, y - 18, 36, 36);
 
         gc.setFill(surfacePaint);
-        gc.fillOval(x - 22, y - 22, 44, 44);
+        gc.fillOval(x - 16, y - 16, 32, 32);
 
         gc.setFill(textPaint);
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.setFont(new Font(24));
+        gc.setFont(new Font(20));
         gc.fillText(chess.toString(), x, y + 6);
     }
 
@@ -336,7 +335,7 @@ public class XiangQiUI implements Initializable {
         byte[] array = new byte[]{action, (byte) r, (byte) c};
         try {
             outputStream.write(array);
-            startTimer();
+//            startTimer();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -363,30 +362,30 @@ public class XiangQiUI implements Initializable {
         alert.show();
     }
 
-    private void startTimer() {
-        inTimer = true;
-        Thread timer = new Thread(() -> {
-            try {
-                int i = 0;
-                while (i < EXPIRE) {
-                    if (inTimer) {
-                        Thread.sleep(100);
-                        i += 100;
-                    } else {
-                        return;
-                    }
-                }
-                Platform.runLater(() -> {
-                    showAlert(resources.getString("error"), resources.getString("expire"), " ");
-                });
-            } catch (InterruptedException ie) {
-                ie.printStackTrace();
-            }
-        });
-        timer.start();
-    }
-
-    private void stopTimer() {
-        inTimer = false;
-    }
+//    private void startTimer() {
+//        inTimer = true;
+//        Thread timer = new Thread(() -> {
+//            try {
+//                int i = 0;
+//                while (i < EXPIRE) {
+//                    if (inTimer) {
+//                        Thread.sleep(100);
+//                        i += 100;
+//                    } else {
+//                        return;
+//                    }
+//                }
+//                Platform.runLater(() -> {
+//                    showAlert(resources.getString("error"), resources.getString("expire"), " ");
+//                });
+//            } catch (InterruptedException ie) {
+//                ie.printStackTrace();
+//            }
+//        });
+//        timer.start();
+//    }
+//
+//    private void stopTimer() {
+//        inTimer = false;
+//    }
 }

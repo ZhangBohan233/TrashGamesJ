@@ -4,14 +4,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="960.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.172-ea"
+<AnchorPane prefHeight="720.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/8.0.172-ea"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.XiangQiUI">
     <children>
-        <VBox prefHeight="960.0" prefWidth="640.0">
+        <VBox prefHeight="720.0" prefWidth="480.0">
             <children>
-                <Canvas fx:id="blackDeadCanvas" height="128.0" width="640.0"/>
-                <Canvas fx:id="canvas" height="704.0" width="640.0"/>
-                <Canvas fx:id="redDeadCanvas" height="128.0" width="640.0"/>
+                <Canvas fx:id="blackDeadCanvas" height="96.0" width="480.0"/>
+                <Canvas fx:id="canvas" height="528.0" width="480.0"/>
+                <Canvas fx:id="redDeadCanvas" height="96.0" width="480.0"/>
             </children>
         </VBox>
     </children>
