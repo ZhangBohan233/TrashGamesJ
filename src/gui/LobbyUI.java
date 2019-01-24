@@ -41,9 +41,21 @@ public class LobbyUI implements Initializable {
 
     private ResourceBundle resources;
 
+    private Stage lobbyStage;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resources = resources;
+    }
+
+    public void setLobbyStage(Stage lobbyStage) {
+        this.lobbyStage = lobbyStage;
+
+        lobbyStage.setOnCloseRequest(e -> {
+            if (gameConnection != null) {
+                gameConnection.close();
+            }
+        });
     }
 
     @FXML
@@ -148,7 +160,7 @@ public class LobbyUI implements Initializable {
                 title = loader.getResources().getString("red_side");
                 stage.setOnCloseRequest(e -> {
                     gameConnection.broadcastClose();
-//                    gameConnection.close();
+                    gameConnection.close();
                 });
             } else {
                 title = loader.getResources().getString("black_side");

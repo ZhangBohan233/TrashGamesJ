@@ -1,6 +1,7 @@
 package gui;
 
 import connection.GameConnection;
+import dock.NetGame;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,7 +20,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class XiangQiUI implements Initializable {
+public class XiangQiUI implements Initializable, NetGame {
 
     private final static int BLOCK_SIZE = 48;
 
@@ -80,12 +81,14 @@ public class XiangQiUI implements Initializable {
         setOnClickHandler();
     }
 
+    @Override
     public void setConnection(InputStream is, OutputStream os, boolean server) {
         inputStream = is;
         outputStream = os;
         isServer = server;
     }
 
+    @Override
     public void listen() {
         Thread thread = new Thread(() -> {
             try {
@@ -148,6 +151,7 @@ public class XiangQiUI implements Initializable {
         drawChess(gc);
     }
 
+    @Override
     public void startGame() {
         chessGame = new ChessGame();
         chessGame.initialize();

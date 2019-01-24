@@ -154,9 +154,9 @@ public class GameConnection {
     public void close() {
         try {
             serverSocket.close();
-//            for (Socket s : clientSockets) {
-//                s.close();
-//            }
+            for (Socket s : clientSockets) {
+                s.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

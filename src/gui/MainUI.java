@@ -45,6 +45,7 @@ public class MainUI extends Application {
 
         LobbyUI lui = loader.getController();
         lui.parent = this;
+        lui.setLobbyStage(stage);
 
         stage.show();
     }
