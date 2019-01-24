@@ -6,14 +6,7 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2d794359-437a-471f-823a-7265b6f87357" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/dock/NetGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/connection/GameConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/connection/GameConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/LobbyUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/LobbyUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/MainUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/MainUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/XiangQiUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/XiangQiUI.java" afterDir="false" />
-    </list>
+    <list default="true" id="2d794359-437a-471f-823a-7265b6f87357" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -41,7 +34,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/gui/LobbyUI.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="32">
+            <state relative-caret-position="162">
               <caret line="171" column="37" lean-forward="true" selection-start-line="171" selection-start-column="37" selection-end-line="171" selection-end-column="37" />
               <folding>
                 <element signature="e#928#929#0" expanded="true" />
@@ -188,11 +181,11 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-10" />
     <option name="y" value="-10" />
-    <option name="width" value="1614" />
-    <option name="height" value="878" />
+    <option name="width" value="1615" />
+    <option name="height" value="879" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -252,7 +245,7 @@
     <property name="Repository.Attach.Sources" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1548307264692" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1548307270719" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -324,12 +317,12 @@
       <workItem from="1548190823991" duration="6591000" />
       <workItem from="1548210311986" duration="14367000" />
       <workItem from="1548274652134" duration="2805000" />
-      <workItem from="1548303664201" duration="2634000" />
+      <workItem from="1548303664201" duration="3210000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="26397000" />
+    <option name="totallyTimeSpent" value="26973000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
@@ -344,7 +337,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3286119" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3286119" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3286119" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -517,7 +510,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/gui/LobbyUI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32">
+        <state relative-caret-position="162">
           <caret line="171" column="37" lean-forward="true" selection-start-line="171" selection-start-column="37" selection-end-line="171" selection-end-column="37" />
           <folding>
             <element signature="e#928#929#0" expanded="true" />
