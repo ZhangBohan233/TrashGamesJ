@@ -58,6 +58,8 @@ public class XiangQiUI implements Initializable, NetGame {
 
     private boolean isServer;
 
+    private boolean isLocalGame;
+
     private boolean inTimer;
 
     @Override
@@ -82,14 +84,16 @@ public class XiangQiUI implements Initializable, NetGame {
     }
 
     @Override
-    public void setConnection(InputStream is, OutputStream os, boolean server) {
+    public void setConnection(InputStream is, OutputStream os, boolean server, boolean localGame) {
         inputStream = is;
         outputStream = os;
         isServer = server;
+        isLocalGame = localGame;
     }
 
     @Override
     public void listen() {
+        if (isLocalGame) return;
         Thread thread = new Thread(() -> {
             try {
                 byte[] buffer = new byte[3];
@@ -187,6 +191,36 @@ public class XiangQiUI implements Initializable, NetGame {
         gc.strokeLine(getScreenX(5), getScreenY(7),
                 getScreenX(3), getScreenY(9));
 
+        drawCross(gc, 2, 1);
+        drawCross(gc, 2, 7);
+        drawCross(gc, 7, 1);
+        drawCross(gc, 7, 7);
+        for (i = 0; i < 9; i += 2) {
+            drawCross(gc, 3, i);
+            drawCross(gc, 6, i);
+        }
+    }
+
+    private void drawCross(GraphicsContext gc, int r, int c) {
+        double x = getScreenX(c);
+        double y = getScreenY(r);
+        gc.setStroke(boardPaint);
+        double gap = BLOCK_SIZE / 12;
+        double len = BLOCK_SIZE / 6;
+        if (c != 8) {
+            // draw right half cross
+            gc.strokeLine(x + gap, y - gap, x + gap, y - gap - len);
+            gc.strokeLine(x + gap, y - gap, x + gap + len, y - gap);
+            gc.strokeLine(x + gap, y + gap, x + gap, y + gap + len);
+            gc.strokeLine(x + gap, y + gap, x + gap + len, y + gap);
+        }
+        if (c != 0) {
+            // draw left half cross
+            gc.strokeLine(x - gap, y - gap, x - gap, y - gap - len);
+            gc.strokeLine(x - gap, y - gap, x - gap - len, y - gap);
+            gc.strokeLine(x - gap, y + gap, x - gap, y + gap + len);
+            gc.strokeLine(x - gap, y + gap, x - gap - len, y + gap);
+        }
     }
 
     private void drawChess(GraphicsContext gc) {
@@ -287,7 +321,7 @@ public class XiangQiUI implements Initializable, NetGame {
             double y = e.getY();
 
             int[] pos = getClicked(x, y);
-            if (isServer == chessGame.isRedTurn() && !chessGame.isTerminated()) {
+            if (clickable()) {
                 if (checkPos(pos)) {
                     if (selection == null) {
                         boolean click = chessGame.selectPosition(pos[0], pos[1]);
@@ -321,7 +355,16 @@ public class XiangQiUI implements Initializable, NetGame {
 
     }
 
+    private boolean clickable() {
+        if (isLocalGame) {
+            return true;
+        } else {
+            return (isServer == chessGame.isRedTurn()) && !chessGame.isTerminated();
+        }
+    }
+
     private void send(byte action, int r, int c) {
+        if (isLocalGame) return;
         byte[] array = new byte[]{action, (byte) r, (byte) c};
         try {
             outputStream.write(array);

@@ -33,7 +33,7 @@ public class MainUI extends Application {
         FXMLLoader loader = makeView(stage, "xiangQiUI.fxml");
 
         XiangQiUI gameUI = loader.getController();
-
+        gameUI.setConnection(null, null, false, true);
         stage.show();
     }
 

@@ -61,7 +61,6 @@ public class LobbyUI implements Initializable {
     @FXML
     void createRoomAction() {
         try {
-//            ServerSocket serverSocket = new ServerSocket(PORT, 50, InetAddress.getLocalHost());
             String localHostAddress = textField.getText();
             gameConnection = new GameConnection(localHostAddress, 1);
             gameConnection.createServer();
@@ -180,7 +179,7 @@ public class LobbyUI implements Initializable {
 
             XiangQiUI gameUI = loader.getController();
 
-            gameUI.setConnection(client.getInputStream(), client.getOutputStream(), isServer);
+            gameUI.setConnection(client.getInputStream(), client.getOutputStream(), isServer, false);
             gameUI.listen();
 
             stage.show();
