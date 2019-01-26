@@ -119,6 +119,8 @@ public class LobbyUI implements Initializable {
     void closeRoomAction() {
         gameConnection.close();
         closeRoomButton.setDisable(true);
+
+        refreshListOwner();
     }
 
     @FXML
@@ -168,8 +170,6 @@ public class LobbyUI implements Initializable {
                         OutputStream os = client.getOutputStream();
                         os.write(new byte[]{GameConnection.CLOSE});
                         os.flush();
-//                        os.close();
-//                        client.close();
                     } catch (IOException e2) {
                         e2.printStackTrace();
                     }
