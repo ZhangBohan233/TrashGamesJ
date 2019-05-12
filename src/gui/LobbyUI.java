@@ -179,7 +179,7 @@ public class LobbyUI implements Initializable {
 
             XiangQiUI gameUI = loader.getController();
 
-            gameUI.setConnection(client.getInputStream(), client.getOutputStream(), isServer, false);
+            gameUI.setConnection(client.getInputStream(), client.getOutputStream(), isServer, false, false);
             gameUI.listen();
 
             stage.show();

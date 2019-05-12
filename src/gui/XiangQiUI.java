@@ -13,6 +13,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import program.Chess;
 import program.ChessGame;
+import program.chessAi.Move;
+import program.chessAi.ChessAI;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +62,11 @@ public class XiangQiUI implements Initializable, NetGame {
 
     private boolean isLocalGame;
 
+    private boolean isPvE;
+
     private boolean inTimer;
+
+    private ChessAI chessAI;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -84,11 +90,16 @@ public class XiangQiUI implements Initializable, NetGame {
     }
 
     @Override
-    public void setConnection(InputStream is, OutputStream os, boolean server, boolean localGame) {
+    public void setConnection(InputStream is, OutputStream os, boolean server, boolean localGame, boolean pve) {
         inputStream = is;
         outputStream = os;
         isServer = server;
         isLocalGame = localGame;
+        isPvE = pve;
+
+        if (isPvE) {
+            chessAI = new ChessAI(4, false);
+        }
     }
 
     @Override
@@ -346,6 +357,17 @@ public class XiangQiUI implements Initializable, NetGame {
                                 draw();
                                 drawDead();
                                 checkTerminateAndShow();
+
+                                if (isPvE && chessAI.isRed() == chessGame.isRedTurn()) {
+                                    Move aiMove = chessAI.move(chessGame);
+                                    chessGame.selectPosition(aiMove.getSrcPos());
+                                    if (!chessGame.move(aiMove.getDestPos())) {
+                                        throw new RuntimeException("failed to move");
+                                    }
+                                    draw();
+                                    drawDead();
+                                    checkTerminateAndShow();
+                                }
                             }
                         }
                     }
@@ -357,7 +379,11 @@ public class XiangQiUI implements Initializable, NetGame {
 
     private boolean clickable() {
         if (isLocalGame) {
-            return true;
+            if (isPvE) {
+                return chessGame.isRedTurn() != chessAI.isRed();
+            } else {
+                return true;
+            }
         } else {
             return (isServer == chessGame.isRedTurn()) && !chessGame.isTerminated();
         }
@@ -406,31 +432,4 @@ public class XiangQiUI implements Initializable, NetGame {
             Platform.runLater(() -> showAlert(resources.getString("game_over"), p, ""));
         }
     }
-
-//    private void startTimer() {
-//        inTimer = true;
-//        Thread timer = new Thread(() -> {
-//            try {
-//                int i = 0;
-//                while (i < EXPIRE) {
-//                    if (inTimer) {
-//                        Thread.sleep(100);
-//                        i += 100;
-//                    } else {
-//                        return;
-//                    }
-//                }
-//                Platform.runLater(() -> {
-//                    showAlert(resources.getString("error"), resources.getString("expire"), " ");
-//                });
-//            } catch (InterruptedException ie) {
-//                ie.printStackTrace();
-//            }
-//        });
-//        timer.start();
-//    }
-//
-//    private void stopTimer() {
-//        inTimer = false;
-//    }
 }

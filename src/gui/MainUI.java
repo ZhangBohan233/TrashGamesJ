@@ -27,13 +27,24 @@ public class MainUI extends Application {
     }
 
     @FXML
+    void singleGame() throws IOException {
+        Stage stage = new Stage();
+
+        FXMLLoader loader = makeView(stage, "xiangQiUI.fxml");
+
+        XiangQiUI gameUI = loader.getController();
+        gameUI.setConnection(null, null, false, true, true);
+        stage.show();
+    }
+
+    @FXML
     void doubleGame() throws IOException {
         Stage stage = new Stage();
 
         FXMLLoader loader = makeView(stage, "xiangQiUI.fxml");
 
         XiangQiUI gameUI = loader.getController();
-        gameUI.setConnection(null, null, false, true);
+        gameUI.setConnection(null, null, false, true, false);
         stage.show();
     }
 

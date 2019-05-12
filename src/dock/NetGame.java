@@ -20,8 +20,9 @@ public interface NetGame {
      * @param outputStream the output stream, which the client send data to
      * @param isServer     whether the new game instance is the server side
      * @param isLocalGame  whether the new game instance is a local game, which does not have net connection
+     * @param pve          whether the new game instance is player vs ai
      */
-    void setConnection(InputStream inputStream, OutputStream outputStream, boolean isServer, boolean isLocalGame);
+    void setConnection(InputStream inputStream, OutputStream outputStream, boolean isServer, boolean isLocalGame, boolean pve);
 
     /**
      * Starts the GUI game.
